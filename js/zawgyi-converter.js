@@ -14,6 +14,6 @@ export function sanitizeSong(song) {
     if (!song) return song;
     if (song.title) song.title = fixUnicode(song.title);
     if (song.artist) song.artist = fixUnicode(song.artist);
-    if (song&& .album) song.album = fixUnicode(song.album);
+    if (song.album) song.album = fixUnicode(song.album); // မှားနေတဲ့နေရာကို ပြင်ဆင်ထားပါသည်
     return song;
 }
