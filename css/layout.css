@@ -1,13 +1,13 @@
 /* =====================================================
-   Desktop (browser) layout  — sidebar + main + player bar
-   Phone layout              — tab bar + mini player + full-screen Now Playing
+   MuzikLink Style Desktop Layout (Sidebar + Main + Player)
+   Phone Layout (Tab bar + Full-screen Now Playing)
    ===================================================== */
 
-#app {
+.app-container {
   height: 100dvh;
   display: grid;
-  grid-template-columns: 248px minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto;   /* player ဖျောက်ထားရင် နေရာမယူ */
+  grid-template-columns: 250px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
   grid-template-areas: "side main" "player player";
 }
 
@@ -16,56 +16,106 @@
   grid-area: side;
   background: var(--surface);
   border-right: 1px solid var(--line);
-  padding: 22px 14px 14px;
-  display: flex; flex-direction: column; gap: 22px;
+  padding: 24px 16px;
+  display: flex; 
+  flex-direction: column; 
+  gap: 32px;
 }
-.brand { display: flex; align-items: center; gap: 12px; padding: 0 10px; font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
-.brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink); }
-.brand-mark svg.i { width: 20px; height: 20px; }
 
-.nav { display: flex; flex-direction: column; gap: 2px; }
+.brand {
+  padding: 0 10px;
+}
+.brand-text {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--accent); /* အပြာရောင်/Cyan လိုဂိုစာသား */
+  letter-spacing: -0.02em;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.menu-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 10px;
+  letter-spacing: 0.5px;
+}
+
+.nav { display: flex; flex-direction: column; gap: 4px; }
 .nav-btn {
   display: flex; align-items: center; gap: 14px; text-align: left;
-  padding: 11px 12px; border-radius: var(--r-sm); color: var(--muted); font-weight: 500;
-  transition: color .15s, background .15s;
+  padding: 10px 12px; border-radius: var(--r-sm); 
+  color: var(--muted); font-weight: 500; font-size: 15px;
+  transition: all .15s;
 }
 .nav-btn:hover { color: var(--text); background: var(--line); }
-.nav-btn.active { color: var(--text); background: var(--surface-2); }
+.nav-btn.active { 
+  color: var(--text); 
+  background: var(--surface-2); 
+  border-left: 3px solid var(--accent); /* ဘေးဘက်လိုင်းအပြာလေး */
+}
 .nav-btn.active svg.i { color: var(--accent); }
+
 .side-foot { margin-top: auto; padding: 0 4px; display: flex; flex-direction: column; gap: 6px; }
 
-/* ===== Main ===== */
+/* ===== Main Area ===== */
 .main {
   grid-area: main;
   overflow-y: auto;
   position: relative;
-  background:
-    radial-gradient(900px 340px at 20% -80px, hsl(var(--hue) 55% 22% / .75), transparent 70%),
-    var(--bg);
-  transition: background .6s;
+  background: radial-gradient(800px 400px at 20% -50px, hsl(var(--hue) 60% 18% / .6), transparent 70%), var(--bg);
 }
+
+/* ===== Top Navigation Bar ===== */
 .topbar {
   position: sticky; top: 0; z-index: 10;
-  display: flex; align-items: center; gap: 14px;
-  padding: 18px 32px 14px;
-  background: linear-gradient(var(--bg) 40%, transparent);
-  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 32px 14px;
+  background: linear-gradient(var(--bg) 50%, transparent);
+  backdrop-filter: blur(12px);
 }
-.topbar h1 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-right: auto; }
-.search {
+
+.top-links {
+  display: flex; gap: 24px;
+}
+.top-links a {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.top-links a:hover, .top-links a.active {
+  color: var(--text);
+}
+
+.top-right {
+  display: flex; align-items: center; gap: 20px;
+}
+
+.search-box {
   display: flex; align-items: center; gap: 10px;
-  width: min(340px, 40%); padding: 9px 16px;
+  width: 260px; padding: 8px 16px;
   background: var(--surface-2); border-radius: 999px; color: var(--muted);
-  border: 1px solid transparent; transition: border-color .15s;
+  border: 1px solid transparent; transition: 0.2s;
 }
-.search:focus-within { border-color: var(--accent); }
-.search svg.i { width: 18px; height: 18px; }
-.search input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--text); }
-.search input::-webkit-search-cancel-button { filter: invert(.7); }
+.search-box:focus-within { border-color: var(--accent); background: var(--surface); }
+.search-box svg.i { width: 18px; height: 18px; }
+.search-box input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--text); }
+.search-box input::placeholder { color: var(--muted); font-size: 13px; }
 
-.view { padding: 4px 32px 40px; }
+.user-actions { display: flex; align-items: center; gap: 12px; }
 
-/* ===== Section header (album/artist/playlist detail) ===== */
+.view-content { padding: 4px 32px 40px; }
+
+
+/* ===== Section headers (album/artist details) ===== */
 .hero { display: flex; gap: 24px; align-items: flex-end; padding: 8px 0 26px; }
 .hero .cover { width: 188px; flex: none; font-size: 40px; box-shadow: 0 18px 40px rgba(0, 0, 0, .45); }
 .hero-text { min-width: 0; }
@@ -79,7 +129,7 @@
   display: grid;
   grid-template-columns: 52px minmax(0, 1fr) minmax(0, .7fr) 56px 44px 44px;
   align-items: center; gap: 12px;
-  padding: 7px 10px; border-radius: var(--r-sm);
+  padding: 8px 10px; border-radius: var(--r-sm);
   cursor: pointer; transition: background .12s;
 }
 .row:hover { background: var(--surface); }
@@ -88,19 +138,16 @@
 .row .cover { width: 44px; border-radius: 8px; font-size: 14px; }
 .r-main { min-width: 0; }
 .r-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.r-sub { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.r-album { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.r-sub, .r-album { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .r-dur { color: var(--muted); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
 .row .icon-btn { width: 36px; height: 36px; }
-.row .icon-btn svg.i { width: 19px; height: 19px; }
-.row .eq { display: none; }
 
-/* ===== Grid cards (albums / artists / playlists) ===== */
+/* ===== Grid cards (albums / artists) ===== */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 22px 18px; }
-.card { text-align: left; padding: 12px; border-radius: var(--r-md); transition: background .15s; min-width: 0; display: block; width: 100%; }
+.card { text-align: left; padding: 12px; border-radius: var(--r-md); transition: background .15s; width: 100%; display: block; }
 .card:hover { background: var(--surface); }
 .card .cover { width: 100%; font-size: 34px; margin-bottom: 12px; box-shadow: 0 10px 24px rgba(0, 0, 0, .35); }
-.card b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15px; }
 .card span.sub { display: block; color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .empty { text-align: center; color: var(--muted); padding: 70px 20px; }
@@ -109,51 +156,53 @@
 
 .only-phone { display: none; }
 
-/* ===== Phone tab bar: desktop မှာ ဖျောက် ===== */
+/* ===== Phone tab bar & np (hidden on desktop) ===== */
 .tabbar { display: none; }
-.np { display: none; }
+.np-mobile { display: none; }
 
 /* =====================================================
-   PHONE
+   PHONE (Mobile Responsive)
    ===================================================== */
 @media (max-width: 860px) {
-  #app { display: block; }
+  .app-container { display: block; }
   .sidebar { display: none; }
 
   .main { position: fixed; inset: 0; padding-top: var(--safe-top); padding-bottom: calc(136px + var(--safe-bottom)); }
-  .topbar { flex-wrap: wrap; gap: 10px; padding: 14px 16px 10px; }
-  .topbar h1 { font-size: 24px; }
+  
+  /* Mobile Topbar Adjustments */
+  .topbar { flex-direction: column; align-items: stretch; gap: 12px; padding: 14px 16px 10px; }
+  .top-links { justify-content: flex-start; overflow-x: auto; padding-bottom: 6px; gap: 18px; }
+  .top-links::-webkit-scrollbar { display: none; }
+  .top-right { flex-direction: row-reverse; justify-content: space-between; }
+  .search-box { flex: 1; width: auto; max-width: none; }
+  
   .only-phone { display: inline-grid; }
-  .search { width: 100%; order: 3; }
-  .view { padding: 2px 10px 24px; }
+  .view-content { padding: 4px 12px 24px; }
 
-  /* tab bar */
+  /* Mobile Tab bar */
   .tabbar {
     display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
-    background: rgba(21, 24, 40, .94); backdrop-filter: blur(14px);
+    background: rgba(21, 24, 40, .96); backdrop-filter: blur(14px);
     border-top: 1px solid var(--line);
     padding: 6px 4px calc(6px + var(--safe-bottom));
   }
   .tab-btn {
-    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
-    color: var(--muted); font-size: 11px; padding: 4px 0;
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    color: var(--muted); font-size: 11px; padding: 4px 0; border: none; background: transparent;
   }
-  .tab-btn svg.i { width: 23px; height: 23px; }
+  .tab-btn svg.i { width: 24px; height: 24px; }
   .tab-btn.active { color: var(--accent); }
 
-  /* hero */
+  /* Mobile Track Rows & Grids */
   .hero { flex-direction: column; align-items: center; text-align: center; gap: 16px; }
   .hero .cover { width: min(58vw, 230px); }
   .hero-text h2 { font-size: 26px; }
   .hero-actions { justify-content: center; }
 
-  /* rows: cover | title | heart | more */
   .row { grid-template-columns: 48px minmax(0, 1fr) 40px 40px; gap: 10px; padding: 8px 6px; }
   .r-album, .r-dur { display: none; }
 
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 8px; }
   .card { padding: 8px; }
   .card .cover { font-size: 28px; }
-
-  .toast { bottom: calc(150px + var(--safe-bottom)); }
 }
