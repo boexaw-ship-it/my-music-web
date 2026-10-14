@@ -9,32 +9,39 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const mb = (n) => (n / 1048576).toFixed(n > 10485760 ? 0 : 1) + ' MB';
 
 export function mountUpload(root, { onDone, goCatalog }) {
+  // MuzikLink Style HTML Template အဖြစ် အနည်းငယ် ပြင်ဆင်ထားသည်
   root.innerHTML = `
   <section class="upload">
     <div class="dropzone" id="dz">
       <div class="dz-icon">${icon('upload')}</div>
-      <b>သီချင်းဖိုင်တွေကို ဒီမှာ ဆွဲချပါ</b>
-      <span class="muted">Folder တစ်ခုလုံး ဆွဲချလည်း ရပါတယ်</span>
+      <b style="font-size:16px; color:var(--text);">သီချင်းဖိုင်တွေကို ဒီမှာ ဆွဲချပါ</b>
+      <span class="muted small">Folder တစ်ခုလုံး ဆွဲချလည်း ရပါတယ်</span>
       <div class="dz-btns">
         <button class="solid" id="pick-files" type="button">ဖိုင်ရွေးမယ်</button>
-        <button class="ghost bordered" id="pick-folder" type="button">Folder ရွေးမယ်</button>
+        <button class="ghost bordered" id="pick-folder" type="button" style="border-radius:999px;">Folder ရွေးမယ်</button>
       </div>
       <input type="file" id="in-files" multiple hidden accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.jpg,.jpeg,.png,.webp">
       <input type="file" id="in-folder" multiple hidden webkitdirectory>
     </div>
 
     <div class="up-fields">
-      <label>Artist<input id="up-artist" placeholder="မဖြည့်လည်း ရ" autocomplete="off"></label>
-      <label>Album<input id="up-album" placeholder="မဖြည့်လည်း ရ" autocomplete="off"></label>
+      <label>Artist Name
+        <input id="up-artist" placeholder="မဖြည့်လည်း ရ" autocomplete="off">
+      </label>
+      <label>Album Name
+        <input id="up-album" placeholder="မဖြည့်လည်း ရ" autocomplete="off">
+      </label>
     </div>
-    <p class="muted small up-note">မဖြည့်ရင် ဖိုင်ထဲက tag (artist / album) နဲ့ folder နာမည်ကနေ Album အလိုအလျောက် စီပေးပါမယ်။
-      ဖြည့်ရင် ရွေးထားတဲ့ ဖိုင်အားလုံးကို ဒီ Artist / Album အောက် ထည့်ပါမယ်။</p>
+    <p class="up-note">
+      <span style="color:var(--accent);">*သတိပြုရန်:</span> မဖြည့်ရင် ဖိုင်ထဲက tag (artist / album) နဲ့ folder နာမည်ကနေ Album အလိုအလျောက် စီပေးပါမယ်။ ဖြည့်ရင် ရွေးထားတဲ့ ဖိုင်အားလုံးကို ဒီ Artist / Album အောက် ထည့်ပါမယ်။
+    </p>
 
     <div id="up-list" class="up-list"></div>
+    
     <div class="up-actions">
       <button class="solid" id="up-start" type="button" disabled>Upload လုပ်မယ်</button>
-      <button class="ghost" id="up-clear" type="button">စာရင်းရှင်းမယ်</button>
-      <span id="up-sum" class="muted small"></span>
+      <button class="ghost" id="up-clear" type="button" style="background:var(--surface-2); border-radius:999px;">စာရင်းရှင်းမယ်</button>
+      <span id="up-sum" class="muted small" style="margin-left:auto; font-weight:500;"></span>
     </div>
   </section>`;
 
@@ -58,9 +65,13 @@ export function mountUpload(root, { onDone, goCatalog }) {
     list.innerHTML = queue.map((q) => {
       const label = { wait: 'စောင့်နေပါတယ်', up: q.pct + '%', done: 'ပြီးပါပြီ', dup: 'ရှိပြီးသား', err: q.msg || 'မအောင်မြင်ပါ' }[q.state];
       return `<div class="up-item ${q.state}">
-        <div class="up-name"><b>${esc(q.file.name)}</b><small>${mb(q.file.size)}${q.msg && q.state === 'done' ? ' → ' + esc(q.msg) : ''}</small></div>
+        <div class="up-name">
+           <b>${esc(q.file.name)}</b>
+           <small>${mb(q.file.size)}${q.msg && q.state === 'done' ? ' → ' + esc(q.msg) : ''}</small>
+        </div>
         <div class="up-bar"><i style="width:${q.state === 'done' || q.state === 'dup' ? 100 : q.pct}%"></i></div>
-        <span class="up-state">${esc(label)}</span></div>`;
+        <span class="up-state">${esc(label)}</span>
+      </div>`;
     }).join('');
     start.disabled = running || !queue.some((q) => q.state === 'wait');
   }
@@ -109,8 +120,13 @@ export function mountUpload(root, { onDone, goCatalog }) {
     const err = queue.filter((q) => q.state === 'err').length;
     await onDone(ok);
     $('#up-artist').value = ''; $('#up-album').value = '';     // နောက် album မှာ မှားမထည့်မိအောင်
-    sum.innerHTML = `ပြီးပါပြီ: ${ok} ခု ထည့်ပြီး${dup ? `၊ ရှိပြီးသား ${dup}` : ''}${err ? `၊ မအောင်မြင် ${err}` : ''}။ ` +
-      (ok ? '<button class="link" id="to-cat" type="button">Catalog ကြည့်မယ်</button>' : '');
+    
+    // Status message ကို ပိုသေသပ်အောင် ပြင်ထားသည်
+    let statusText = `<span style="color:#1ed760;">ပြီးပါပြီ: ${ok} ခု ထည့်ပြီး</span>`;
+    if(dup) statusText += ` ၊ ရှိပြီးသား ${dup}`;
+    if(err) statusText += ` <span style="color:#f44336;">၊ မအောင်မြင် ${err}</span>`;
+    
+    sum.innerHTML = statusText + (ok ? '<button class="link" id="to-cat" type="button" style="margin-left:10px;">Catalog ကြည့်မယ်</button>' : '');
     $('#to-cat')?.addEventListener('click', goCatalog);
   }
 
