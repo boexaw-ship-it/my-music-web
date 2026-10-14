@@ -1,19 +1,28 @@
+/* =====================================================
+   MuzikLink Style - Base (Tokens, Typography, Buttons, Globals)
+   ===================================================== */
+
 /* ===== Tokens ===== */
 :root {
-  --bg: #0d0f1a;
-  --surface: #151828;
-  --surface-2: #1e2238;
-  --line: rgba(255, 255, 255, .07);
-  --text: #eceaf4;
-  --muted: #8a8fa8;
-  --accent: #a493ff;
-  --accent-2: #ff8fb8;
-  --accent-ink: #14102b;
-  --hue: 255;                /* ဖွင့်နေတဲ့ album အလိုက် JS က ပြောင်းပေးတယ် */
+  /* MuzikLink ရဲ့ အပြာရင့် နောက်ခံ အရောင်များ */
+  --bg: #090e17;
+  --surface: #101623;
+  --surface-2: #1a2235;
+  --line: rgba(255, 255, 255, .08);
+  
+  --text: #ffffff;
+  --muted: #8892b0;
+  
+  /* MuzikLink ရဲ့ Cyan / Light Blue Accent */
+  --accent: #00c6ff;
+  --accent-2: #0072ff;
+  --accent-ink: #ffffff;
+  
+  --hue: 200; /* ပုံမှန် အပြာရောင်ဘက် သွားထားသည် */
 
   --r-sm: 8px;
   --r-md: 14px;
-  --r-lg: 22px;
+  --r-lg: 20px;
 
   --font: "Inter", system-ui, -apple-system, "Segoe UI", "Noto Sans Myanmar", "Myanmar Text", "Padauk", sans-serif;
   --safe-top: env(safe-area-inset-top, 0px);
@@ -28,7 +37,7 @@ body {
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);
-  line-height: 1.55;
+  line-height: 1.6;
   font-size: 15px;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -51,44 +60,50 @@ svg.i.fill { fill: currentColor; stroke: none; }
   display: inline-grid; place-items: center;
   width: 40px; height: 40px; border-radius: 50%;
   color: var(--muted);
-  transition: color .15s, background .15s, transform .1s;
+  transition: all .2s;
 }
-.icon-btn:hover { color: var(--text); background: var(--line); }
+.icon-btn:hover { color: var(--text); background: var(--surface-2); }
 .icon-btn:active { transform: scale(.92); }
 .icon-btn.active { color: var(--accent); }
-.icon-btn.lg svg.i { width: 30px; height: 30px; }
+.icon-btn.lg svg.i { width: 28px; height: 28px; }
 
 .play-btn {
   display: inline-grid; place-items: center;
   width: 44px; height: 44px; border-radius: 50%;
-  background: var(--text); color: var(--bg);
-  transition: transform .12s, background .2s;
+  background: var(--accent); color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 198, 255, 0.4); /* Play Button အလင်းရောင်လေး */
+  transition: transform .2s, box-shadow .2s;
 }
-.play-btn:hover { transform: scale(1.06); }
+.play-btn:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0, 198, 255, 0.6); }
 .play-btn:active { transform: scale(.94); }
-.play-btn.xl { width: 72px; height: 72px; background: var(--accent); color: var(--accent-ink); }
-.play-btn.xl svg.i { width: 32px; height: 32px; }
+.play-btn.xl { width: 68px; height: 68px; }
+.play-btn.xl svg.i { width: 30px; height: 30px; }
 
 .ghost {
   display: inline-flex; align-items: center; gap: 10px;
-  padding: 9px 12px; border-radius: var(--r-sm);
-  color: var(--muted); font-size: 13px;
+  padding: 10px 14px; border-radius: var(--r-sm);
+  color: var(--muted); font-size: 14px; font-weight: 500;
+  transition: all .2s;
 }
-.ghost:hover { color: var(--text); background: var(--line); }
-.ghost.wide { width: 100%; justify-content: center; margin-top: 6px; }
+.ghost:hover { color: var(--text); background: var(--surface-2); }
+.ghost.wide { width: 100%; justify-content: center; margin-top: 8px; }
 
 .solid {
-  background: var(--accent); color: var(--accent-ink);
-  padding: 10px 16px; border-radius: 999px; font-weight: 600;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  padding: 12px 24px; border-radius: 999px; font-weight: 600; font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 198, 255, 0.3);
+  transition: all .2s;
 }
-.solid:active { transform: scale(.97); }
+.solid:hover { box-shadow: 0 6px 18px rgba(0, 198, 255, 0.5); transform: translateY(-2px); }
+.solid:active { transform: scale(.96) translateY(0); }
 
 /* ===== Cover (gradient placeholder + optional image) ===== */
 .cover {
   position: relative; overflow: hidden; display: grid; place-items: center;
   aspect-ratio: 1; border-radius: var(--r-md);
-  background: linear-gradient(135deg, hsl(var(--h) 55% 40%), hsl(calc(var(--h) + 55) 60% 20%));
-  color: rgba(255, 255, 255, .85); font-weight: 700;
+  background: linear-gradient(135deg, hsl(var(--hue) 55% 30%), hsl(calc(var(--hue) + 40) 60% 15%));
+  color: rgba(255, 255, 255, .8); font-weight: 700;
 }
 .cover > span { font-size: 1.6em; }
 .cover > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -98,49 +113,55 @@ svg.i.fill { fill: currentColor; stroke: none; }
 .toast {
   position: fixed; left: 50%; bottom: calc(150px + var(--safe-bottom));
   transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
-  background: var(--surface-2); border: 1px solid var(--line);
-  padding: 10px 18px; border-radius: 999px; font-size: 13px; z-index: 60;
-  transition: opacity .2s, transform .2s;
+  background: rgba(26, 34, 53, 0.95); backdrop-filter: blur(8px);
+  border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  padding: 12px 22px; border-radius: 999px; font-size: 14px; z-index: 60;
+  transition: opacity .3s, transform .3s;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* ===== Bottom sheet ===== */
 .sheet-wrap { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
-.sheet-bg { position: absolute; inset: 0; background: rgba(0, 0, 0, .55); }
+.sheet-bg { position: absolute; inset: 0; background: rgba(9, 14, 23, .7); backdrop-filter: blur(4px); }
 .sheet {
-  position: relative; width: min(480px, 100%); max-height: 80dvh; overflow: auto;
-  background: var(--surface); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 20px 18px calc(18px + var(--safe-bottom));
-  animation: sheet-in .22s ease-out;
+  position: relative; width: min(480px, 100%); max-height: 85dvh; overflow: auto;
+  background: var(--surface); border-radius: 24px 24px 0 0;
+  padding: 24px 20px calc(20px + var(--safe-bottom));
+  animation: sheet-in .3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
 }
 @media (min-width: 861px) {
   .sheet-wrap { align-items: center; }
-  .sheet { border-radius: var(--r-lg); padding-bottom: 18px; }
+  .sheet { border-radius: 24px; padding-bottom: 24px; }
 }
-.sheet h3 { font-size: 17px; margin-bottom: 12px; }
+.sheet h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
 .sheet-item {
-  display: flex; width: 100%; align-items: center; gap: 12px;
-  padding: 11px 8px; border-radius: var(--r-sm); text-align: left;
+  display: flex; width: 100%; align-items: center; gap: 14px;
+  padding: 12px 10px; border-radius: var(--r-sm); text-align: left;
+  transition: background .2s;
 }
-.sheet-item:hover { background: var(--line); }
-.sheet-item small { margin-left: auto; color: var(--muted); }
-#sheet-form { display: flex; gap: 8px; margin-top: 12px; }
+.sheet-item:hover { background: var(--surface-2); }
+.sheet-item small { margin-left: auto; color: var(--muted); font-size: 13px; }
+
+#sheet-form { display: flex; gap: 10px; margin-top: 16px; }
 #sheet-form input {
-  flex: 1; min-width: 0; padding: 10px 14px; border-radius: 999px;
-  background: var(--surface-2); border: 1px solid transparent; outline: none;
+  flex: 1; min-width: 0; padding: 12px 16px; border-radius: 999px;
+  background: var(--bg); border: 1px solid var(--line); outline: none; color: var(--text);
+  transition: border-color .2s;
 }
 #sheet-form input:focus { border-color: var(--accent); }
-@keyframes sheet-in { from { transform: translateY(40px); opacity: 0; } }
+
+@keyframes sheet-in { from { transform: translateY(60px); opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
 
-/* ===== Role: Owner(admin) / Friend(guest) / local ===== */
+/* ===== Roles ===== */
 body:not([data-role="admin"]) .admin-only { display: none !important; }
 body[data-role="local"] .auth-only { display: none !important; }
 .ghost.bordered { border: 1px solid var(--line); }
 .link { color: var(--accent); font-weight: 600; font-size: 13px; padding: 4px 6px; border-radius: 6px; }
 .link:hover { text-decoration: underline; }
 
-.solid:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.solid:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
