@@ -1,0 +1,12 @@
+body { display: grid; place-items: center; overflow: auto; padding: 24px; min-height: 100dvh;
+  background: radial-gradient(700px 360px at 50% -60px, hsl(255 55% 24% / .8), transparent 70%), var(--bg); }
+.login { width: min(360px, 100%); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.mark { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink); margin-bottom: 10px; }
+.mark svg { width: 34px; height: 34px; }
+h1 { font-size: 28px; letter-spacing: -.02em; }
+form { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-top: 18px; }
+input { padding: 13px 18px; border-radius: 999px; border: 1px solid transparent; background: var(--surface-2); outline: none; font-size: 16px; text-align: center; }
+input:focus { border-color: var(--accent); }
+form .solid { padding: 13px; font-size: 16px; }
+#err { color: #ff8f8f; min-height: 1.5em; font-size: 14px; margin-top: 8px; }
