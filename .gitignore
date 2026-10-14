@@ -1,0 +1,10 @@
+# သီချင်းဖိုင်တွေကို GitHub မတင်ပါ
+music/*
+!music/.gitkeep
+covers/
+library.json
+__pycache__/
+*.pyc
+.DS_Store
+config.json
+music/.incoming/
