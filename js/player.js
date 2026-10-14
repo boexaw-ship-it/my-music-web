@@ -125,18 +125,31 @@ audio.addEventListener('error', () => emit('error', current()));
 /* ---------- Media Session (lock screen / headset buttons) ---------- */
 function updateMediaSession(t) {
   if (!('mediaSession' in navigator)) return;
-  const artwork = t.cover ? [{ src: new URL(t.cover, location.href).href, sizes: '512x512' }] : [];
-  navigator.mediaSession.metadata = new MediaMetadata({ title: t.title, artist: t.artist, album: t.album, artwork });
+  
+  // သီချင်းမှာ Cover ပုံ ပါမလာရင် BaZaw MUSIC လိုဂို (icon-192.png) ကို အစားထိုးပြမယ်
+  const fallbackCover = new URL('assets/icons/icon-192.png', location.href).href;
+  const coverUrl = t.cover ? new URL(t.cover, location.href).href : fallbackCover;
+  const artwork = [{ src: coverUrl, sizes: '512x512', type: 'image/png' }];
+  
+  navigator.mediaSession.metadata = new MediaMetadata({ 
+    title: t.title, 
+    artist: t.artist, 
+    album: t.album, 
+    artwork 
+  });
 }
+
 function setSessionState(s) {
   if ('mediaSession' in navigator) navigator.mediaSession.playbackState = s;
 }
+
 function updatePosition() {
   if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return;
   const { time, duration } = progress();
   if (!duration) return;
   try { navigator.mediaSession.setPositionState({ duration, position: Math.min(time, duration), playbackRate: audio.playbackRate }); } catch { /* ignore */ }
 }
+
 if ('mediaSession' in navigator) {
   const ms = navigator.mediaSession;
   const set = (a, fn) => { try { ms.setActionHandler(a, fn); } catch { /* မထောက်ပံ့ */ } };
