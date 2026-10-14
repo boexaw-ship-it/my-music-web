@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>My Music</title>
+  <meta name="theme-color" content="#0d0f1a">
+  <meta name="description" content="ကိုယ်ပိုင် music library">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="My Music">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/player.css">
+  <link rel="stylesheet" href="css/home.css">
+  <!-- ဇော်ဂျီမှ ယူနီကုဒ်သို့ အလိုအလျောက်ပြောင်းရန် Rabbit Library ထည့်သွင်းခြင်း -->
+  <script src="https://cdn.jsdelivr.net/npm/rabbit-node@1.0.3/rabbit.min.js"></script>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== Desktop sidebar ===== -->
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark" data-icon="logo"></span><span>My Music</span></div>
+    <nav class="nav" aria-label="Library">
+      <button class="nav-btn" data-view="home"><span data-icon="home"></span><span>Home</span></button>
+      <button class="nav-btn" data-view="catalog"><span data-icon="albums"></span><span>Catalog</span></button>
+      <button class="nav-btn" data-view="favorites"><span data-icon="heart"></span><span>Favorites</span></button>
+      <button class="nav-btn" data-view="playlists"><span data-icon="playlist"></span><span>Playlists</span></button>
+      <button class="nav-btn admin-only" data-view="upload"><span data-icon="upload"></span><span>Upload</span></button>
+    </nav>
+    <div class="quick" id="quick"></div>
+    <div class="side-foot">
+      <button class="ghost admin-only" id="rescan"><span data-icon="refresh"></span><span>Library ပြန်ဖတ်</span></button>
+      <p id="count" class="muted small"></p>
+      <div class="me auth-only">
+        <span class="avatar" id="avatar">?</span>
+        <span class="me-text"><b id="me-name"></b><small class="muted">Signed in</small></span>
+        <button class="icon-btn" id="logout" data-icon="logout" aria-label="ထွက်မယ်"></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== Main ===== -->
+  <main class="main" id="main">
+    <header class="topbar">
+      <button class="icon-btn" id="back" data-icon="back" aria-label="နောက်သို့" hidden></button>
+      <h1 id="title">သီချင်းများ</h1>
+      <button class="icon-btn only-phone admin-only" id="rescan-m" data-icon="refresh" aria-label="Library ပြန်ဖတ်"></button>
+      <label class="search">
+        <span data-icon="search"></span>
+        <input id="search" type="search" placeholder="သီချင်း၊ album၊ artist ရှာရန်" autocomplete="off">
+      </label>
+    </header>
+    <div id="view" class="view"></div>
+  </main>
+
+  <!-- ===== Phone tab bar ===== -->
+  <nav class="tabbar" aria-label="Library">
+    <button class="tab-btn" data-view="home"><span data-icon="home"></span><span>Home</span></button>
+    <button class="tab-btn" data-view="catalog"><span data-icon="albums"></span><span>Catalog</span></button>
+    <button class="tab-btn" data-view="favorites"><span data-icon="heart"></span><span>Favorites</span></button>
+    <button class="tab-btn" data-view="playlists"><span data-icon="playlist"></span><span>Playlists</span></button>
+    <button class="tab-btn admin-only" data-view="upload"><span data-icon="upload"></span><span>Upload</span></button>
+    <button class="tab-btn auth-only phone-logout" id="logout-m"><span data-icon="logout"></span><span>ထွက်မယ်</span></button>
+  </nav>
+
+  <!-- ===== Player bar (desktop: full / phone: mini) ===== -->
+  <div class="player" id="player" hidden>
+    <div class="p-left">
+      <button class="p-info" id="open-np" aria-label="Now playing ဖွင့်ရန်">
+        <span class="p-cover"></span>
+        <span class="p-text"><b class="p-title"></b><span class="p-artist"></span></span>
+      </button>
+      <button class="icon-btn p-fav" data-act="fav" aria-label="Favorite"></button>
+    </div>
+
+    <div class="p-center">
+      <div class="p-controls">
+        <button class="icon-btn p-shuffle" data-act="shuffle" data-icon="shuffle" aria-label="Shuffle"></button>
+        <button class="icon-btn" data-act="prev" data-icon="prev" aria-label="ယခင်"></button>
+        <button class="play-btn" data-act="play" aria-label="Play / Pause"></button>
+        <button class="icon-btn" data-act="next" data-icon="next" aria-label="နောက်တပုဒ်"></button>
+        <button class="icon-btn p-repeat" data-act="repeat" aria-label="Repeat"></button>
+      </div>
+      <div class="p-seek">
+        <span class="t-cur">0:00</span>
+        <input class="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">
+        <span class="t-dur">0:00</span>
+      </div>
+    </div>
+
+    <div class="p-right">
+      <span data-icon="volume"></span>
+      <input id="volume" class="seek vol" type="range" min="0" max="100" value="100" aria-label="Volume">
+    </div>
+    <div class="mini-progress"><i></i></div>
+  </div>
+
+  <!-- ===== Phone full-screen Now Playing ===== -->
+  <section class="np" id="np" aria-label="Now playing">
+    <div class="np-top">
+      <button class="icon-btn" id="close-np" data-icon="down" aria-label="ပိတ်ရန်"></button>
+      <span class="muted">ယခု ဖွင့်နေသည်</span>
+      <button class="icon-btn" data-act="addto" data-icon="plus" aria-label="Playlist ထဲထည့်"></button>
+    </div>
+    <div class="np-cover p-cover"></div>
+    <div class="np-meta">
+      <div class="np-text"><b class="p-title"></b><span class="p-artist"></span></div>
+      <button class="icon-btn p-fav" data-act="fav" aria-label="Favorite"></button>
+    </div>
+    <div class="np-seek">
+      <input class="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">
+      <div class="np-times"><span class="t-cur">0:00</span><span class="t-dur">0:00</span></div>
+    </div>
+    <div class="np-controls">
+      <button class="icon-btn p-shuffle" data-act="shuffle" data-icon="shuffle" aria-label="Shuffle"></button>
+      <button class="icon-btn lg" data-act="prev" data-icon="prev" aria-label="ယခင်"></button>
+      <button class="play-btn xl" data-act="play" aria-label="Play / Pause"></button>
+      <button class="icon-btn lg" data-act="next" data-icon="next" aria-label="နောက်တပုဒ်"></button>
+      <button class="icon-btn p-repeat" data-act="repeat" aria-label="Repeat"></button>
+    </div>
+  </section>
+</div>
+
+<!-- ===== Bottom sheet: playlist ထဲထည့် ===== -->
+<div class="sheet-wrap" id="sheet" hidden>
+  <div class="sheet-bg" data-close></div>
+  <div class="sheet">
+    <h3 id="sheet-title">Playlist ထဲထည့်ရန်</h3>
+    <div id="sheet-list"></div>
+    <form id="sheet-form">
+      <input id="sheet-input" type="text" placeholder="Playlist အသစ်ပေးမည့် နာမည်" maxlength="40">
+      <button type="submit" class="solid">ဖန်တီးပြီး ထည့်မယ်</button>
+    </form>
+    <button class="ghost wide" data-close>ပိတ်ရန်</button>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<audio id="audio" preload="metadata"></audio>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
