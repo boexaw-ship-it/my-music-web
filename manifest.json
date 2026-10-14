@@ -1,6 +1,6 @@
 {
-  "name": "My Music",
-  "short_name": "My Music",
+  "name": "BaZaw MUSIC",
+  "short_name": "BaZaw MUSIC",
   "description": "ကိုယ်ပိုင် music library player",
   "start_url": "./",
   "scope": "./",
