@@ -1,22 +1,18 @@
-[
-  {
-    "id": "music/test_song_1.mp3",
-    "title": "BaZaw Music Test 1",
-    "artist": "BaZaw",
-    "album": "GitHub Test Album",
-    "duration": 180,
-    "year": 2026,
-    "track": 1,
-    "cover": "assets/icons/icon.svg"
-  },
-  {
-    "id": "music/test_song_2.mp3",
-    "title": "Hiphop Demo Song",
-    "artist": "BaZaw",
-    "album": "GitHub Test Album",
-    "duration": 210,
-    "year": 2026,
-    "track": 2,
-    "cover": "assets/icons/icon.svg"
-  }
-]
+{
+  "tracks": [
+    {
+      "id": "test_1",
+      "title": "BaZaw Music Test 1",
+      "artist": "BaZaw",
+      "album": "GitHub Test Album",
+      "duration": 180,
+      "year": 2026,
+      "track": 1,
+      "file": "music/test_song_1.mp3",
+      "path": "music/test_song_1.mp3",
+      "url": "music/test_song_1.mp3",
+      "src": "music/test_song_1.mp3",
+      "cover": "assets/icons/icon-192.png"
+    }
+  ]
+}
