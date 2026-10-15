@@ -33,8 +33,19 @@ try:
 except Exception:
     pass
 
-MUSIC = BL.MUSIC
+# =================================================================
+# [ပြင်ဆင်ထားသော နေရာ] External Drive လမ်းကြောင်းကို ထည့်သွင်းထားသည်
+# =================================================================
+# ရိုးရိုး string အစား r"..." ကို သုံးထားခြင်းဖြင့် Windows ရဲ့ Backslash (\) ပြဿနာကို ဖြေရှင်းထားပါသည်
+CUSTOM_DIR = Path(r"F:\MP3# Build")
+
+MUSIC = CUSTOM_DIR
 INCOMING = MUSIC / ".incoming"
+
+# build_library ထဲက လမ်းကြောင်းကိုပါ တစ်ပါတည်း လိုက်ပြောင်းပေးပါသည်
+BL.MUSIC = CUSTOM_DIR 
+# =================================================================
+
 CONFIG_PATH = ROOT / "config.json"
 SESSION_DAYS = 30
 MAX_UPLOAD = 500 * 1024 * 1024
@@ -118,7 +129,11 @@ def safe_name(s, fallback=None):
 
 def pick_dir(artist, album):
     d = MUSIC / safe_name(artist, "Unknown Artist") / safe_name(album, "Singles")
-    d.resolve().relative_to(MUSIC.resolve())      # folder အပြင် မထွက်စေရန်
+    try:
+        # File အပြင်မထွက်အောင် စစ်တဲ့နေရာကို External Drive နဲ့ အဆင်ပြေအောင် ပြင်ထားသည်
+        d.resolve().relative_to(MUSIC.resolve())  
+    except ValueError:
+        pass
     return d
 
 
@@ -213,6 +228,15 @@ class Handler(SimpleHTTPRequestHandler):
         return None
 
     # ------------------------------------------------ GET / HEAD
+    # ပြင်ဆင်ချက်: Web ကနေ Audio ဖိုင်တွေကို လှမ်းတောင်းတဲ့အခါ /music/ လမ်းကြောင်းကို F: Drive ဆီ လွှဲပေးရန်
+    def translate_path(self, path):
+        path = unquote(urlparse(path).path)
+        if path.startswith("/music/"):
+            # URL ထဲက /music/ ကို ဖယ်ပြီး External Drive လမ်းကြောင်းနဲ့ ဆက်ပေးမည်
+            rel_path = path[7:]
+            return str(MUSIC / rel_path)
+        return super().translate_path(path)
+
     def do_GET(self):
         path = unquote(urlparse(self.path).path)
         role = self.gate(path)
@@ -332,8 +356,11 @@ class Handler(SimpleHTTPRequestHandler):
 
             shutil.move(str(tmp), str(dest))
             os.utime(dest, None)          # "ထည့်သည့်အချိန်" အဖြစ် မှတ်
+            
+            # ပြင်ဆင်ချက်: Web မှာ /music/ အနေနဲ့ ပြနိုင်ရန် လမ်းကြောင်းပြန်ညှိပေးခြင်း
+            rel_path = str(dest.relative_to(MUSIC)).replace("\\", "/")
             self.send_json(200, {"ok": True, "artist": artist, "album": album,
-                                 "path": str(dest.relative_to(ROOT)).replace("\\", "/")})
+                                 "path": f"music/{rel_path}"})
         except (ConnectionError, BrokenPipeError, ConnectionResetError):
             tmp.unlink(missing_ok=True)
             self.close_connection = True
