@@ -53,6 +53,7 @@
     </div>
     
     <div class="side-foot">
+        <!-- GitHub တွင် အမြဲပေါ်စေရန် admin-only class ကို ဖယ်ရှားထားသည် -->
         <button class="ghost" id="rescan"><span data-icon="refresh"></span><span>ပြန်ဖတ်မယ်</span></button>
     </div>
   </aside>
@@ -97,6 +98,7 @@
     <button class="tab-btn active" data-view="home"><span data-icon="home"></span><span>Home</span></button>
     <button class="tab-btn" data-view="catalog"><span data-icon="albums"></span><span>Catalog</span></button>
     <button class="tab-btn" data-view="playlists"><span data-icon="playlist"></span><span>Playlists</span></button>
+    <!-- GitHub တွင် အမြဲပေါ်စေရန် admin-only class ကို ဖယ်ရှားထားသည် -->
     <button class="tab-btn" data-view="upload"><span data-icon="upload"></span><span>Upload</span></button>
   </nav>
 
@@ -149,16 +151,46 @@
 
 <!-- GitHub Test အတွက် Mock API ကို Override လုပ်သည့် Script -->
 <script>
-  // GitHub Pages တွင် API မရှိသောကြောင့် api/me တောင်းပါက admin အဖြစ် အမြဲ အောင်မြင်အောင် လုပ်ထားသည်
   const originalFetch = window.fetch;
+  
+  // GitHub Pages ၏ လမ်းကြောင်းအမှန်ကို အလိုအလျောက် ရယူရန်
+  const basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
+  
   window.fetch = async function(url, options) {
-    if (url.includes('/api/me')) {
-      return new Response(JSON.stringify({ role: 'admin' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    const urlStr = url.toString();
+    
+    // 1. Login တောင်းလျှင် Admin ဟု အမြဲဖြေမည်
+    if (urlStr.includes('/api/me') || urlStr.includes('api/me')) {
+      return new Response(JSON.stringify({ role: 'admin' }), { 
+        status: 200, headers: { 'Content-Type': 'application/json' } 
+      });
     }
-    // သီချင်းစာရင်းကို တောင်းပါက root တွင်ရှိသော library.json ကိုသာ တိုက်ရိုက်ဖတ်ပါမည်
-    if (url.includes('__rescan')) {
-      url = 'library.json'; 
+    
+    // 2. သီချင်းစာရင်း တောင်းလျှင် (Rescan သို့မဟုတ် library.json)
+    if (urlStr.includes('__rescan') || urlStr.includes('library.json')) {
+      try {
+        // relative path ဖြင့် မှန်ကန်စွာ လှမ်းခေါ်မည်
+        const res = await originalFetch(basePath + 'library.json');
+        const data = await res.json();
+        
+        // Frontend လိုအပ်သော Format { tracks: [...] } အဖြစ် ပြောင်းပေးမည်
+        let finalData = data;
+        if (Array.isArray(data)) {
+           finalData = { tracks: data };
+        } else if (!data.tracks) {
+           finalData = { tracks: [] };
+        }
+        
+        return new Response(JSON.stringify(finalData), { 
+          status: 200, headers: { 'Content-Type': 'application/json' } 
+        });
+      } catch (e) {
+        console.error("Library.json ဖတ်မရပါ - ဖိုင်ရှိမရှိ စစ်ဆေးပါ:", e);
+        return new Response(JSON.stringify({ tracks: [] }), { status: 200 });
+      }
     }
+    
+    // အခြားသော API ခေါ်ယူမှုများကို ပုံမှန်အတိုင်း ပြုလုပ်မည်
     return originalFetch(url, options);
   };
 </script>
