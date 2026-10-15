@@ -3,7 +3,43 @@ import { loadLibrary, lib } from './library.js';
 import { initUI, afterLibrary } from './ui.js';
 import * as P from './player.js';
 
-// သီချင်းနာမည်နဲ့ အဆိုတော်ကိုယူပြီး အွန်လိုင်းမှာ ပုံအလိုအလျောက်ရှာပေးမယ့် Function
+// --- GITHUB PAGES MOCK API OVERRIDE ---
+// Backend မရှိသော GitHub တွင် Error မတက်စေရန် API များကို ကြားဖြတ်ဖန်တီးပေးခြင်း
+const originalFetch = window.fetch;
+const basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
+
+window.fetch = async function(url, options) {
+  const urlStr = typeof url === 'object' && url.url ? String(url.url) : String(url);
+  
+  // 1. Login တောင်းလျှင် Admin အဖြစ် အမြဲ အောင်မြင်စေမည်
+  if (urlStr.includes('/api/me') || urlStr.includes('api/me')) {
+    return new Response(JSON.stringify({ role: 'admin' }), { 
+        status: 200, headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  // 2. သီချင်းစာရင်း တောင်းလျှင် library.json မှ တိုက်ရိုက်ဖတ်ပေးမည်
+  if (urlStr.includes('__rescan') || urlStr.includes('library.json')) {
+    try {
+      const res = await originalFetch(basePath + 'library.json');
+      const data = await res.json();
+      
+      // Frontend လိုအပ်သော { tracks: [...] } ပုံစံသို့ ပြောင်းပေးခြင်း
+      let finalData = Array.isArray(data) ? { tracks: data } : data;
+      
+      return new Response(JSON.stringify(finalData), { 
+          status: 200, headers: { 'Content-Type': 'application/json' }
+      });
+    } catch (e) {
+      console.error("Library.json ဖတ်မရပါ:", e);
+      return new Response(JSON.stringify({ tracks: [] }), { status: 200 });
+    }
+  }
+  
+  return originalFetch(url, options);
+};
+// --------------------------------------
+
 window.getAutoCover = async function(title, artist, imgElement) {
     imgElement.onerror = null; 
     try {
@@ -25,28 +61,19 @@ window.getAutoCover = async function(title, artist, imgElement) {
 async function boot() {
   console.log("App စတင်နေပါပြီ...");
   
-  // 1. GitHub Test တွင် Backend မရှိသဖြင့် Auth စစ်ဆေးခြင်းကို ကျော်ပါမည်
-  // await initAuth(); 
+  try { await initAuth(); } catch(e) { console.warn("Auth check skipped"); }
+  try { initUI(); } catch(e) { console.error("UI Error:", e); }
+  try { await loadLibrary(); } catch(e) { console.error("Library Error:", e); }
+  try { afterLibrary(); } catch(e) { console.error("AfterLibrary Error:", e); }
   
-  // 2. UI များကို စတင်ပြင်ဆင်မည်
-  initUI();
-  
-  // 3. သီချင်းစာရင်း (library.json) ကို ဖတ်မည်
-  await loadLibrary();
-  
-  // 4. သီချင်းဖတ်ပြီးနောက် UI ကို Update လုပ်မည်
-  afterLibrary();
-  
-  // 5. Player ကို စတင်မည်
-  if(lib && lib.tracks) {
-      P.restore(lib.tracks);       
+  if (lib && lib.tracks && lib.tracks.length > 0) {
+      try { P.restore(lib.tracks); } catch(e) {}
   }
   
   console.log("App အပြည့်အဝ ပွင့်သွားပါပြီ!");
 }
 boot();
 
-// Service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
