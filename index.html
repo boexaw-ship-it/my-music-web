@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>BaZaw MUSIC (GitHub Test)</title>
+  <title>BaZaw MUSIC (GitHub)</title>
   <meta name="theme-color" content="#0d0f1a">
   <meta name="description" content="ကိုယ်ပိုင် music library">
   <link rel="manifest" href="manifest.json">
@@ -14,19 +14,16 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="BaZaw MUSIC">
   
-  <!-- CSS လင့်ခ်များ -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/player.css">
   <link rel="stylesheet" href="css/home.css">
   
-  <!-- Rabbit Font Converter -->
   <script src="https://cdn.jsdelivr.net/npm/rabbit-node@1.0.3/rabbit.min.js"></script>
 </head>
 <body>
 <div id="app" class="app-container">
 
-  <!-- ===== Left Sidebar ===== -->
   <aside class="sidebar">
     <div class="brand">
       <span class="brand-text">BaZaw MUSIC</span>
@@ -40,28 +37,21 @@
         <button class="nav-btn" data-view="catalog"><span data-icon="albums"></span><span>Album</span></button>
         <button class="nav-btn" data-view="artists"><span data-icon="artist"></span><span>Artist</span></button>
         <button class="nav-btn" data-view="radio"><span data-icon="radio"></span><span>Radio</span></button>
-        <!-- GitHub တွင် အမြဲပေါ်စေရန် admin-only class ကို ဖယ်ရှားထားသည် -->
         <button class="nav-btn" data-view="upload"><span data-icon="upload"></span><span>Upload</span></button>
       </nav>
     </div>
 
     <div class="sidebar-menu">
       <h3 class="menu-title">Top Charts</h3>
-      <div id="quick-charts" class="quick-charts">
-        <!-- JS ဖြင့် Top Charts သီချင်းများ ဝင်လာမည့်နေရာ -->
-      </div>
+      <div id="quick-charts" class="quick-charts"></div>
     </div>
     
     <div class="side-foot">
-        <!-- GitHub တွင် အမြဲပေါ်စေရန် admin-only class ကို ဖယ်ရှားထားသည် -->
         <button class="ghost" id="rescan"><span data-icon="refresh"></span><span>ပြန်ဖတ်မယ်</span></button>
     </div>
   </aside>
 
-  <!-- ===== Main Content Area ===== -->
   <main class="main" id="main">
-    
-    <!-- Top Navigation Bar -->
     <header class="topbar">
       <nav class="top-links">
         <a href="#" class="active">MUSIC</a>
@@ -76,7 +66,6 @@
           <input id="search" type="search" placeholder="Type Here To Search" autocomplete="off">
         </label>
         
-        <!-- GitHub တွင် အမြဲပေါ်စေရန် auth-only class ကို ဖယ်ရှားထားသည် -->
         <div class="user-actions">
           <button class="icon-btn" data-icon="bell" aria-label="Notifications"></button>
           <button class="icon-btn" data-icon="settings" aria-label="Settings"></button>
@@ -86,25 +75,17 @@
       </div>
     </header>
 
-    <!-- Dynamic View Area (Home, Catalog, etc. ဝင်လာမည့်နေရာ) -->
-    <div id="view" class="view-content scrollable">
-        <!-- ယခင် UI JS က ဤနေရာတွင် Hero Banner, Top Music များကို Render လုပ်ပါမည် -->
-    </div>
-    
+    <div id="view" class="view-content scrollable"></div>
   </main>
 
-  <!-- ===== Phone Bottom Tab Bar ===== -->
   <nav class="tabbar" aria-label="Library">
     <button class="tab-btn active" data-view="home"><span data-icon="home"></span><span>Home</span></button>
     <button class="tab-btn" data-view="catalog"><span data-icon="albums"></span><span>Catalog</span></button>
     <button class="tab-btn" data-view="playlists"><span data-icon="playlist"></span><span>Playlists</span></button>
-    <!-- GitHub တွင် အမြဲပေါ်စေရန် admin-only class ကို ဖယ်ရှားထားသည် -->
     <button class="tab-btn" data-view="upload"><span data-icon="upload"></span><span>Upload</span></button>
   </nav>
 
-  <!-- ===== Bottom Player Bar ===== -->
   <div class="player-bar" id="player" hidden>
-    
     <div class="player-left">
       <div class="p-info" id="open-np">
         <div class="p-cover" id="p-cover-img"></div>
@@ -137,64 +118,12 @@
       <input id="volume" class="vol-bar" type="range" min="0" max="100" value="100" aria-label="Volume">
       <button class="icon-btn" data-icon="expand" aria-label="Full Screen"></button>
     </div>
-    
   </div>
 
-  <!-- ===== Phone Full-Screen Now Playing ===== -->
-  <section class="np-mobile" id="np" aria-label="Now playing" hidden>
-     <!-- Mobile View အတွက် ယခင်အတိုင်းထားပါမည် -->
-  </section>
-
+  <section class="np-mobile" id="np" aria-label="Now playing" hidden></section>
 </div>
 
 <audio id="audio" preload="metadata"></audio>
-
-<!-- GitHub Test အတွက် Mock API ကို Override လုပ်သည့် Script -->
-<script>
-  const originalFetch = window.fetch;
-  
-  // GitHub Pages ၏ လမ်းကြောင်းအမှန်ကို အလိုအလျောက် ရယူရန်
-  const basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
-  
-  window.fetch = async function(url, options) {
-    const urlStr = url.toString();
-    
-    // 1. Login တောင်းလျှင် Admin ဟု အမြဲဖြေမည်
-    if (urlStr.includes('/api/me') || urlStr.includes('api/me')) {
-      return new Response(JSON.stringify({ role: 'admin' }), { 
-        status: 200, headers: { 'Content-Type': 'application/json' } 
-      });
-    }
-    
-    // 2. သီချင်းစာရင်း တောင်းလျှင် (Rescan သို့မဟုတ် library.json)
-    if (urlStr.includes('__rescan') || urlStr.includes('library.json')) {
-      try {
-        // relative path ဖြင့် မှန်ကန်စွာ လှမ်းခေါ်မည်
-        const res = await originalFetch(basePath + 'library.json');
-        const data = await res.json();
-        
-        // Frontend လိုအပ်သော Format { tracks: [...] } အဖြစ် ပြောင်းပေးမည်
-        let finalData = data;
-        if (Array.isArray(data)) {
-           finalData = { tracks: data };
-        } else if (!data.tracks) {
-           finalData = { tracks: [] };
-        }
-        
-        return new Response(JSON.stringify(finalData), { 
-          status: 200, headers: { 'Content-Type': 'application/json' } 
-        });
-      } catch (e) {
-        console.error("Library.json ဖတ်မရပါ - ဖိုင်ရှိမရှိ စစ်ဆေးပါ:", e);
-        return new Response(JSON.stringify({ tracks: [] }), { status: 200 });
-      }
-    }
-    
-    // အခြားသော API ခေါ်ယူမှုများကို ပုံမှန်အတိုင်း ပြုလုပ်မည်
-    return originalFetch(url, options);
-  };
-</script>
-
 <script type="module" src="js/main.js"></script>
 </body>
 </html>
