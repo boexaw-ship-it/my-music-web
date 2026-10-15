@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>BaZaw MUSIC</title>
+  <title>BaZaw MUSIC (GitHub Test)</title>
   <meta name="theme-color" content="#0d0f1a">
   <meta name="description" content="ကိုယ်ပိုင် music library">
   <link rel="manifest" href="manifest.json">
@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="BaZaw MUSIC">
   
-  <!-- CSS လင့်ခ်များ (ယခင်အတိုင်း) -->
+  <!-- CSS လင့်ခ်များ -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/player.css">
@@ -40,7 +40,8 @@
         <button class="nav-btn" data-view="catalog"><span data-icon="albums"></span><span>Album</span></button>
         <button class="nav-btn" data-view="artists"><span data-icon="artist"></span><span>Artist</span></button>
         <button class="nav-btn" data-view="radio"><span data-icon="radio"></span><span>Radio</span></button>
-        <button class="nav-btn admin-only" data-view="upload"><span data-icon="upload"></span><span>Upload</span></button>
+        <!-- GitHub တွင် အမြဲပေါ်စေရန် admin-only class ကို ဖယ်ရှားထားသည် -->
+        <button class="nav-btn" data-view="upload"><span data-icon="upload"></span><span>Upload</span></button>
       </nav>
     </div>
 
@@ -52,7 +53,7 @@
     </div>
     
     <div class="side-foot">
-        <button class="ghost admin-only" id="rescan"><span data-icon="refresh"></span><span>ပြန်ဖတ်မယ်</span></button>
+        <button class="ghost" id="rescan"><span data-icon="refresh"></span><span>ပြန်ဖတ်မယ်</span></button>
     </div>
   </aside>
 
@@ -74,10 +75,11 @@
           <input id="search" type="search" placeholder="Type Here To Search" autocomplete="off">
         </label>
         
-        <div class="user-actions auth-only">
+        <!-- GitHub တွင် အမြဲပေါ်စေရန် auth-only class ကို ဖယ်ရှားထားသည် -->
+        <div class="user-actions">
           <button class="icon-btn" data-icon="bell" aria-label="Notifications"></button>
           <button class="icon-btn" data-icon="settings" aria-label="Settings"></button>
-          <span class="avatar" id="avatar">?</span>
+          <span class="avatar" id="avatar">A</span>
           <button class="icon-btn phone-logout" id="logout" data-icon="logout" aria-label="ထွက်မယ်"></button>
         </div>
       </div>
@@ -95,7 +97,7 @@
     <button class="tab-btn active" data-view="home"><span data-icon="home"></span><span>Home</span></button>
     <button class="tab-btn" data-view="catalog"><span data-icon="albums"></span><span>Catalog</span></button>
     <button class="tab-btn" data-view="playlists"><span data-icon="playlist"></span><span>Playlists</span></button>
-    <button class="tab-btn admin-only" data-view="upload"><span data-icon="upload"></span><span>Upload</span></button>
+    <button class="tab-btn" data-view="upload"><span data-icon="upload"></span><span>Upload</span></button>
   </nav>
 
   <!-- ===== Bottom Player Bar ===== -->
@@ -136,7 +138,7 @@
     
   </div>
 
-  <!-- ===== Phone Full-Screen Now Playing (ယခင်အတိုင်း) ===== -->
+  <!-- ===== Phone Full-Screen Now Playing ===== -->
   <section class="np-mobile" id="np" aria-label="Now playing" hidden>
      <!-- Mobile View အတွက် ယခင်အတိုင်းထားပါမည် -->
   </section>
@@ -144,6 +146,23 @@
 </div>
 
 <audio id="audio" preload="metadata"></audio>
+
+<!-- GitHub Test အတွက် Mock API ကို Override လုပ်သည့် Script -->
+<script>
+  // GitHub Pages တွင် API မရှိသောကြောင့် api/me တောင်းပါက admin အဖြစ် အမြဲ အောင်မြင်အောင် လုပ်ထားသည်
+  const originalFetch = window.fetch;
+  window.fetch = async function(url, options) {
+    if (url.includes('/api/me')) {
+      return new Response(JSON.stringify({ role: 'admin' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    // သီချင်းစာရင်းကို တောင်းပါက root တွင်ရှိသော library.json ကိုသာ တိုက်ရိုက်ဖတ်ပါမည်
+    if (url.includes('__rescan')) {
+      url = 'library.json'; 
+    }
+    return originalFetch(url, options);
+  };
+</script>
+
 <script type="module" src="js/main.js"></script>
 </body>
 </html>
